@@ -1,0 +1,61 @@
+pipeline {
+    agent any  // This means the pipeline can run on any available agent or node
+
+    environment {
+        APP_NAME = 'my-app'  // Set the environment variable for the application name
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the latest code from GitHub repository
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo "Building ${APP_NAME}"  // Print the app name being built
+                // Run the build script (e.g., for a Node.js app, use npm install)
+                sh './build.sh'  // Replace with your build command
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo "Running tests for ${APP_NAME}"  // Print the app name being tested
+                // Run your test script (e.g., for a Node.js app, use npm test)
+                sh './test.sh'  // Replace with your test command
+            }
+        }
+
+        stage('Deploy to Staging') {
+            steps {
+                echo "Deploying ${APP_NAME} to staging"
+                // Deploy the app to the staging environment (e.g., using a script or Docker)
+                sh './deploy-staging.sh'  // Replace with your deploy command
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                echo "Deploying ${APP_NAME} to production"
+                // Deploy the app to the production environment (e.g., using a script or Docker)
+                sh './deploy-production.sh'  // Replace with your deploy command
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up resources'
+            // Optional: Add any cleanup commands here after the pipeline runs
+        }
+        success {
+            echo 'Build and deployment succeeded'
+        }
+        failure {
+            echo 'Build or deployment failed'
+        }
+    }
+}
